@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from backend.chatgpt import query_chatgpt
 from backend.currency import convert_currency
 from backend.file_search import search_files
-from frontend.gui import create_gui
 from frontend.settings import open_settings
 
 # Load environment variables from .env file
@@ -64,6 +63,12 @@ def listen_for_shortcut():
 root = tk.Tk()
 
 # Create the search bar using the frontend code
+def create_gui(root):
+    search_var = tk.StringVar()
+    search_bar = tk.Entry(root, textvariable=search_var, font=("Arial", 14))
+    search_bar.pack(fill="x", padx=10, pady=10)
+    return search_var, search_bar
+
 search_var, search_bar = create_gui(root)
 
 # Popup frame for displaying results
