@@ -8,5 +8,9 @@ def query_chatgpt(prompt, api_key):
             messages=[{"role": "user", "content": prompt}]
         )
         return response['choices'][0]['message']['content']
+    except openai.error.OpenAIError as e:
+        return f"OpenAI API error: {e}"
+    except KeyError:
+        return "Unexpected response format from OpenAI API"
     except Exception as e:
-        return f"Error: {e}"
+        return f"An unexpected error occurred: {e}"

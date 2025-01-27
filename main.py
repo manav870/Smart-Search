@@ -16,28 +16,29 @@ load_dotenv()
 # Load your API key
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
+if not OPENAI_API_KEY:
+    raise ValueError("OpenAI API key not found. Please set it in the .env file.")
+
 # Function to handle search queries
 def handle_search(query):
     if query.startswith("?"):  # ChatGPT query
         result = query_chatgpt(query[1:], OPENAI_API_KEY)
         display_results([f"ChatGPT: {result}"])
-
-    elif any(symbol in query for symbol in ["$", "€", "¥"]):  # Currency conversion
-        try:
-            parts = query.split()
-            amount = float(parts[0][1:])  # Strip the symbol and convert to float
-            from_currency = parts[0][0]  # The currency symbol
-            result = convert_currency(amount, from_currency)
-            display_results([f"{amount} {from_currency} = {result} USD"])
-        except Exception:
-            display_results(["Invalid currency format. Use something like $100"])
-
-    else:  # Handle other types of searches (file search, etc.)
-        results = search_files(query)
-        if results:
-            display_results(results)
+    elif query.startswith("$"):  # Currency conversion query
+        parts = query[1:].split()
+        if len(parts) == 3:
+            amount, from_currency, to_currency = parts
+            try:
+                amount = float(amount)
+                result = convert_currency(amount, from_currency, to_currency)
+                display_results([f"Conversion: {result}"])
+            except ValueError:
+                display_results(["Invalid amount for conversion"])
         else:
-            display_results(["No files found or invalid query."])
+            display_results(["Invalid currency conversion query format"])
+    else:  # File search query
+        results = search_files(query)
+        display_results(results)
 
 # Function to display search results
 def display_results(results):
